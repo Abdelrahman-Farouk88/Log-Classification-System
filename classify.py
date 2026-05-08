@@ -11,10 +11,11 @@ def classify(logs):
 def classify_log(source, log_message):
     if source == "LegacyCRM":
         pass
-    label = classify_with_regex(log_message)
-    if label is None:
-        return "Unknown"
-    return label
+    else:
+        label = classify_with_regex(log_message)
+        if label is None:
+            pass
+        return label
 
 
 
