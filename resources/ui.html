@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log Classification System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0e1116;
+      --slate: #1a2230;
+      --bone: #f6f2e8;
+      --acid: #c7ff2e;
+      --rose: #ff6b6b;
+      --sky: #6bd1ff;
+      --shadow: rgba(14, 17, 22, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(800px 400px at 10% -20%, rgba(199, 255, 46, 0.35), transparent 60%),
+        radial-gradient(600px 500px at 110% 10%, rgba(107, 209, 255, 0.35), transparent 60%),
+        linear-gradient(135deg, #fdf7ee 0%, #f2efe7 50%, #e8f4ff 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 40px 20px 80px;
+      overflow-x: hidden;
+    }
+
+    .page {
+      width: min(1100px, 100%);
+      display: grid;
+      gap: 28px;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .title {
+      font-size: clamp(28px, 4vw, 48px);
+      letter-spacing: -0.03em;
+      font-weight: 700;
+    }
+
+    .tagline {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      color: var(--slate);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--bone);
+      border: 2px solid var(--ink);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 10px 12px 0 var(--ink);
+      position: relative;
+      overflow: hidden;
+      animation: rise 0.6s ease forwards;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      right: -60px;
+      top: -60px;
+      background: radial-gradient(circle, rgba(255, 107, 107, 0.4), transparent 70%);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 22px;
+    }
+
+    .card p {
+      margin: 10px 0 18px;
+      color: var(--slate);
+      line-height: 1.5;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      border: 2px solid var(--ink);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff;
+    }
+
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 2px dashed var(--slate);
+      border-radius: 14px;
+      background: #fff;
+      font-size: 14px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--acid);
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 4px 4px 0 var(--ink);
+      margin-top: 12px;
+    }
+
+    .button:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    .status {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      background: #fff;
+      border: 1px solid rgba(14, 17, 22, 0.15);
+      min-height: 44px;
+    }
+
+    .label-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--sky);
+      color: var(--ink);
+      font-weight: 600;
+      border: 1px solid var(--ink);
+    }
+
+    .preview {
+      margin-top: 12px;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      background: #fff;
+      border: 1px solid rgba(14, 17, 22, 0.12);
+      padding: 12px;
+      border-radius: 12px;
+      max-height: 220px;
+      overflow: auto;
+    }
+
+    .download-link {
+      display: inline-block;
+      margin-top: 10px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    @keyframes rise {
+      from {
+        transform: translateY(16px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 24px 16px 60px;
+      }
+
+      .card {
+        box-shadow: 6px 8px 0 var(--ink);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div>
+        <div class="tagline">Log Classification System</div>
+        <div class="title">Classify logs fast, in two styles.</div>
+      </div>
+      <div class="label-pill">CSV + Text Mode</div>
+    </header>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Upload a CSV</h2>
+        <p>Send a CSV with <strong>source</strong> and <strong>log_message</strong> columns. We will return a new CSV with labels.</p>
+        <label for="csvFile">CSV file</label>
+        <input id="csvFile" type="file" accept=".csv" />
+        <button class="button" id="uploadBtn">Classify CSV</button>
+        <div class="status" id="csvStatus">Waiting for a file.</div>
+        <a class="download-link" id="csvDownload" href="#" style="display:none;">Download labeled CSV</a>
+        <div class="preview" id="csvPreview" style="display:none;"></div>
+      </article>
+
+      <article class="card">
+        <h2>Paste a log</h2>
+        <p>Classify a single log message instantly. Add a source to guide the model.</p>
+        <label for="sourceInput">Source</label>
+        <input id="sourceInput" type="text" placeholder="LegacyCRM, ModernCRM, BillingSystem" />
+        <label for="logInput">Log message</label>
+        <textarea id="logInput" placeholder="Paste a log line here..."></textarea>
+        <button class="button" id="textBtn">Classify text</button>
+        <div class="status" id="textStatus">Waiting for a log message.</div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const csvFile = document.getElementById("csvFile");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const csvStatus = document.getElementById("csvStatus");
+    const csvDownload = document.getElementById("csvDownload");
+    const csvPreview = document.getElementById("csvPreview");
+
+    const sourceInput = document.getElementById("sourceInput");
+    const logInput = document.getElementById("logInput");
+    const textBtn = document.getElementById("textBtn");
+    const textStatus = document.getElementById("textStatus");
+
+    uploadBtn.addEventListener("click", async () => {
+      if (!csvFile.files.length) {
+        csvStatus.textContent = "Please choose a CSV file first.";
+        return;
+      }
+
+      csvStatus.textContent = "Classifying...";
+      csvDownload.style.display = "none";
+      csvPreview.style.display = "none";
+
+      const formData = new FormData();
+      formData.append("file", csvFile.files[0]);
+
+      try {
+        const response = await fetch("/classify/", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          csvStatus.textContent = errorData.detail || "Failed to classify CSV.";
+          return;
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        csvDownload.href = url;
+        csvDownload.download = "output.csv";
+        csvDownload.style.display = "inline-block";
+
+        const text = await blob.text();
+        const previewLines = text.split("\n").slice(0, 8).join("\n");
+        csvPreview.textContent = previewLines;
+        csvPreview.style.display = "block";
+
+        csvStatus.textContent = "Done. Preview below.";
+      } catch (error) {
+        csvStatus.textContent = "Network error. Is the API running?";
+      }
+    });
+
+    textBtn.addEventListener("click", async () => {
+      const source = sourceInput.value.trim();
+      const message = logInput.value.trim();
+
+      if (!source || !message) {
+        textStatus.textContent = "Please enter both source and log message.";
+        return;
+      }
+
+      textStatus.textContent = "Classifying...";
+
+      try {
+        const response = await fetch("/classify-text/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ source: source, log_message: message }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          textStatus.textContent = errorData.detail || "Failed to classify text.";
+          return;
+        }
+
+        const data = await response.json();
+        textStatus.innerHTML = `Label: <span class="label-pill">${data.label}</span>`;
+      } catch (error) {
+        textStatus.textContent = "Network error. Is the API running?";
+      }
+    });
+  </script>
+</body>
+</html>
